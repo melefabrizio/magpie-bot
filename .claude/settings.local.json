@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /Users/fabrizio/Code/monade/experiments/magpie-bot/.env*)"
+    ]
+  }
+}
