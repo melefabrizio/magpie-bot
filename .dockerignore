@@ -1,0 +1,9 @@
+.env
+.git
+.husky
+.claude
+.tool-versions
+node_modules
+dist
+*.md
+SPECS.md
