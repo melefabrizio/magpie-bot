@@ -5,7 +5,7 @@ import { extractUrls } from "./pipeline/extract.js";
 import { filterByDomain } from "./pipeline/filter.js";
 import { fetchMetadata } from "./pipeline/metadata.js";
 import { classify } from "./pipeline/classify.js";
-import { submitBookmark } from "./karakeep.js";
+import { isAlreadyBookmarked, submitBookmark } from "./karakeep.js";
 
 const client = new Client({
   intents: [
@@ -32,6 +32,9 @@ client.on("messageCreate", async (message) => {
     urlCount: urls.length,
   });
 
+  const channelName = 'name' in message.channel ? `#${message.channel.name}` : message.channelId;
+  const note = `Shared by @${message.author.username} in ${channelName}\n\n> ${message.content}`;
+
   for (const url of urls) {
     try {
       // Step 1 — domain blocklist
@@ -46,6 +49,13 @@ client.on("messageCreate", async (message) => {
       const canonicalUrl = metadata.resolvedUrl ?? url;
       log("debug", "metadata fetched", { url, canonicalUrl, fetchFailed: metadata.fetchFailed });
 
+      // Step 2b — deduplication
+      const alreadyBookmarked = await isAlreadyBookmarked(canonicalUrl);
+      if (alreadyBookmarked) {
+        log("info", "url already bookmarked", { url, canonicalUrl });
+        continue;
+      }
+
       // Step 3 — classify
       const classification = await classify(metadata);
       log("info", "url classified", {
@@ -57,7 +67,7 @@ client.on("messageCreate", async (message) => {
       if (!classification.interesting) continue;
 
       // Submit to Karakeep
-      const result = await submitBookmark(canonicalUrl);
+      const result = await submitBookmark(canonicalUrl, note);
       if (result.ok) {
         await message.react(config.successEmoji);
       } else {

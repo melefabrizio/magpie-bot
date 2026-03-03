@@ -112,6 +112,7 @@ If the fetch fails (timeout, 4xx/5xx, non-HTML content type), attach a flag `fet
 ```typescript
 interface UrlMetadata {
   url: string;
+  resolvedUrl?: string;
   domain: string;
   title?: string;
   description?: string;
@@ -249,7 +250,7 @@ AWS credentials for Bedrock are passed via environment variables (`AWS_ACCESS_KE
 
 ## Planned Improvements
 
-### [NOT IMPLEMENTED] Fix: remove tags from classification + submission
+### [IMPLEMENTED] Fix: remove tags from classification + submission
 
 Tagging is handled entirely by Karakeep after submission. The classifier no longer needs to produce tags, and the Karakeep API call should not include a `tags` field.
 
@@ -260,7 +261,7 @@ Changes required:
 
 ---
 
-### [NOT IMPLEMENTED] Configurable blocked domains via env var
+### [IMPLEMENTED] Configurable blocked domains via env var
 
 The `BLOCKED_DOMAINS` env var (comma-separated hostnames) should be merged with the hard-coded baseline at startup. This lets the list be extended at deploy time without code changes.
 
@@ -272,7 +273,7 @@ Config change: spread `process.env.BLOCKED_DOMAINS?.split(",")` into `blockedDom
 
 ---
 
-### [NOT IMPLEMENTED] Metadata: follow redirects + existence check
+### [IMPLEMENTED] Metadata: follow redirects + existence check
 
 `fetchMetadata` should:
 1. **Follow redirects** transparently (Node `fetch` does this by default; no change needed for the common case). Track the final resolved URL so the classifier sees the canonical destination, not a `t.co` or `bit.ly` shortener.
@@ -292,7 +293,7 @@ The resolved URL should be used for deduplication (below) and for the Karakeep s
 
 ---
 
-### [NOT IMPLEMENTED] Deduplication via Karakeep API
+### [IMPLEMENTED] Deduplication via Karakeep API
 
 Before submitting, check whether the URL already exists in Karakeep:
 
@@ -314,7 +315,7 @@ Called in `index.ts` after metadata fetch, before classification (no point payin
 
 ---
 
-### [NOT IMPLEMENTED] Pass Discord message context as Karakeep note
+### [IMPLEMENTED] Pass Discord message context as Karakeep note
 
 When submitting a bookmark, include a `note` field with context from the original Discord message:
 
