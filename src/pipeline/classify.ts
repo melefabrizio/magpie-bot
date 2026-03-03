@@ -25,6 +25,9 @@ const schema = z.object({
 
 export async function classify(metadata: UrlMetadata): Promise<ClassifyResult> {
   try {
+    const title = (metadata.title ?? "").slice(0, 200);
+    const description = (metadata.description ?? "").slice(0, 500);
+
     const { object } = await generateObject({
       model: bedrock(BEDROCK_MODEL),
       schema,
@@ -33,7 +36,8 @@ export async function classify(metadata: UrlMetadata): Promise<ClassifyResult> {
       system: config.classifySystemPrompt,
       prompt: `Should this URL be bookmarked?
 
-${JSON.stringify(metadata, null, 2)}
+title: ${title || "(none)"}
+description: ${description || "(none)"}
 
 Respond with interesting: true only if it clearly fits the SAVE criteria above. When in doubt, discard. Write a short reason (one sentence).`,
     });
