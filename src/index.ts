@@ -43,7 +43,8 @@ client.on("messageCreate", async (message) => {
 
       // Step 2 — metadata
       const metadata = await fetchMetadata(url);
-      log("debug", "metadata fetched", { url, fetchFailed: metadata.fetchFailed });
+      const canonicalUrl = metadata.resolvedUrl ?? url;
+      log("debug", "metadata fetched", { url, canonicalUrl, fetchFailed: metadata.fetchFailed });
 
       // Step 3 — classify
       const classification = await classify(metadata);
@@ -56,7 +57,7 @@ client.on("messageCreate", async (message) => {
       if (!classification.interesting) continue;
 
       // Submit to Karakeep
-      const result = await submitBookmark(url);
+      const result = await submitBookmark(canonicalUrl);
       if (result.ok) {
         await message.react(config.successEmoji);
       } else {

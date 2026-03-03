@@ -3,6 +3,7 @@ import { config } from "../config.js";
 
 export interface UrlMetadata {
   url: string;
+  resolvedUrl?: string;
   domain: string;
   title?: string;
   description?: string;
@@ -25,10 +26,13 @@ export async function fetchMetadata(url: string): Promise<UrlMetadata> {
     });
     if (!res.ok) return base;
 
+    const resolvedUrl = res.url !== url ? res.url : undefined;
+    const resolvedDomain = new URL(res.url).hostname;
     const $ = load(await res.text());
     return {
       url,
-      domain,
+      resolvedUrl,
+      domain: resolvedDomain,
       fetchFailed: false,
       title:
         $("title").first().text().trim() ||

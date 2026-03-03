@@ -16,6 +16,7 @@ export const config = {
     "clickup.com",
     "monade.io",
     "monadeapps.xyz",
+    ...(process.env.BLOCKED_DOMAINS?.split(",").map((d) => d.trim()).filter(Boolean) ?? []),
   ],
 
   // Metadata fetch timeout
