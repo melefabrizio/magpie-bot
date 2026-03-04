@@ -1,4 +1,4 @@
-# Magpie
+# Magpie for Karakeep
 
 A Discord bot that watches channels for URLs, classifies them with AI, and saves the interesting ones to [Karakeep](https://karakeep.app) as bookmarks.
 
